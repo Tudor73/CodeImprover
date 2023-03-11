@@ -4,11 +4,12 @@ import * as vscode from 'vscode';
 import { Configuration, OpenAIApi } from "openai";
 import { url } from 'inspector';
 import { BaseAPI } from 'openai/dist/base';
+const dotenv = require("dotenv")
 
 
 async function aiReq(questionForGPT: string) {
     let configuration = new Configuration({
-        apiKey: "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"        
+        apiKey: ""     
     })
     let openai = new OpenAIApi(configuration);
     return openai.createChatCompletion({
@@ -18,7 +19,6 @@ async function aiReq(questionForGPT: string) {
     })
 
 }
-
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -41,6 +41,8 @@ export function activate(context: vscode.ExtensionContext) {
         }
     })
 	
+
+
 	let disposable = vscode.commands.registerCommand('codeimprover.helloWorld', () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
@@ -52,12 +54,15 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.executeCommand('vscode.executeHoverProvider', editor?.document.uri, editor?.selection.active)
                         .then((res) => console.log(res))
 
-
-
         let text = ""
 		if (selection) {
 			text = editor.document.getText(selection);
 			console.log(text);
+            // vscode.window.showTextDocument(editor?.document, editor?.viewColumn, true)
+            // editor.insertSnippet(new vscode.SnippetString("asdadasdasd1111111"), selection.start, { undoStopBefore: true, undoStopAfter: false })
+            let postion = selection.end; 
+            editor.selection = new vscode.Selection(postion, postion);
+            
 		}
         vscode.window.showInformationMessage('Hello World from CodeImprover!');
 
