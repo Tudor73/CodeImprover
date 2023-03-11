@@ -2,8 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { Configuration, OpenAIApi } from "openai";
-import { url } from 'inspector';
-import { BaseAPI } from 'openai/dist/base';
+const fetch = require('node-fetch');
 
 function extractCodeFromMarkdown(markdown: string, language: number ) {
 
@@ -15,16 +14,17 @@ function extractCodeFromMarkdown(markdown: string, language: number ) {
 
 
 
-async function aiReq(questionForGPT: string) {
-    let configuration = new Configuration({
-        apiKey: ""     
-    })
-    let openai = new OpenAIApi(configuration);
-    return openai.createChatCompletion({
-        model: "gpt-3.5-turbo",
-        messages: [{ "role": "user", "content": questionForGPT }],
-        temperature: 0.2
-    })
+async function aiReq(code: string, language: string) {
+    return await fetch("https://hackathon-production-6f8c.up.railway.app/query", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            "code": code,
+            "language": language
+        })
+    });
 
 }
 
@@ -81,12 +81,9 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage('Hello World from CodeImprover!');
 
         let improvements = `Respond using markdown and write only code. Better ways to write this in ${language}: ${text}`
-        aiReq(improvements).then((res) => {
-            
-            let response = res.data.choices[0].message?.content as string
-            response = extractCodeFromMarkdown(response, language?.length as number)
+        aiReq(text, language as string).then((res) => {return res.json()}).then(res => {
+            let response = extractCodeFromMarkdown(res.suggestion, language?.length as number)
             vscode.window.showInformationMessage(response);
-
         }).catch((err) => console.log(err))
         
 
