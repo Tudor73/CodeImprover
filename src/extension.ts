@@ -8,7 +8,7 @@ import { BaseAPI } from 'openai/dist/base';
 
 async function aiReq(questionForGPT: string) {
     let configuration = new Configuration({
-        apiKey: "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"        
+        apiKey: "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"        
     })
     let openai = new OpenAIApi(configuration);
     return openai.createChatCompletion({
@@ -18,7 +18,6 @@ async function aiReq(questionForGPT: string) {
     })
 
 }
-
 
 
 // This method is called when your extension is activated
@@ -33,6 +32,14 @@ export function activate(context: vscode.ExtensionContext) {
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
 
+    vscode.window.showInformationMessage("Login to Github", "Login", "no").then((res) => { 
+        if (res === "Login") {
+            vscode.env.openExternal(vscode.Uri.parse("https://github.com"))
+        }
+        else {
+            vscode.window.showInformationMessage("You can't use this extension without logging in to Github")
+        }
+    })
 	
 	let disposable = vscode.commands.registerCommand('codeimprover.helloWorld', () => {
 		// The code you place here will be executed every time your command is executed
@@ -41,6 +48,12 @@ export function activate(context: vscode.ExtensionContext) {
 		const editor = vscode.window.activeTextEditor;
 		const language = editor?.document.languageId
 		const selection = editor?.selection;
+
+        vscode.commands.executeCommand('vscode.executeHoverProvider', editor?.document.uri, editor?.selection.active)
+                        .then((res) => console.log(res))
+
+
+
         let text = ""
 		if (selection) {
 			text = editor.document.getText(selection);
