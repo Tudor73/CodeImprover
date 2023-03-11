@@ -4,7 +4,15 @@ import * as vscode from 'vscode';
 import { Configuration, OpenAIApi } from "openai";
 import { url } from 'inspector';
 import { BaseAPI } from 'openai/dist/base';
-const dotenv = require("dotenv")
+
+function extractCodeFromMarkdown(markdown: string, language: number ) {
+
+    let start = markdown.search("```")
+    let end = markdown.slice(start+1).search("```")
+    return markdown.slice(start+language + 3, end+1)
+}
+
+
 
 
 async function aiReq(questionForGPT: string) {
@@ -72,9 +80,11 @@ export function activate(context: vscode.ExtensionContext) {
 		}
         vscode.window.showInformationMessage('Hello World from CodeImprover!');
 
-        let improvements = `Write only code. Better ways to write this in ${language}: ${text}`
+        let improvements = `Respond using markdown and write only code. Better ways to write this in ${language}: ${text}`
         aiReq(improvements).then((res) => {
-            const response = res.data.choices[0].message?.content as string
+            
+            let response = res.data.choices[0].message?.content as string
+            response = extractCodeFromMarkdown(response, language?.length as number)
             vscode.window.showInformationMessage(response);
 
         }).catch((err) => console.log(err))
