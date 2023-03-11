@@ -60,8 +60,14 @@ export function activate(context: vscode.ExtensionContext) {
 			console.log(text);
             // vscode.window.showTextDocument(editor?.document, editor?.viewColumn, true)
             // editor.insertSnippet(new vscode.SnippetString("asdadasdasd1111111"), selection.start, { undoStopBefore: true, undoStopAfter: false })
-            let postion = selection.end; 
-            editor.selection = new vscode.Selection(postion, postion);
+            editor.edit(builder => {
+                builder.replace(selection, "1");
+            })
+            .then(success => {
+                console.log("success:", success);
+                var postion = editor.selection.end; 
+                editor.selection = new vscode.Selection(postion, postion);
+            });
             
 		}
         vscode.window.showInformationMessage('Hello World from CodeImprover!');
