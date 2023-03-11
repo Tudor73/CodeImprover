@@ -17,6 +17,20 @@
         "command": "codeimprover.helloWorld",
         "title": "Hello World"
       }
+    ],
+    "keybindings": [
+      {
+        "command": "codeimprover.helloWorld",
+        "key": "ctrl+0",
+        "mac": "cmd+shift+h",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "codeimprover.pasteSuggestion",
+        "key": "ctrl+9",
+        "mac": "cmd+shift+0",
+        "when": "editorTextFocus"
+      }
     ]
   },
   "scripts": {
