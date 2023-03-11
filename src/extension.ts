@@ -12,6 +12,7 @@ function extractCodeFromMarkdown(markdown: string, language: number ) {
 }
 
 
+var response = ""
 
 
 async function aiReq(code: string, language: string) {
@@ -57,16 +58,16 @@ export function activate(context: vscode.ExtensionContext) {
 		const editor = vscode.window.activeTextEditor;
 		const language = editor?.document.languageId
 		const selection = editor?.selection;
-        let response = ""
         vscode.window.showInformationMessage('Hello World from CodeImprover!');
         let text = editor?.document.getText(selection);
         let improvements = `Respond using markdown and write only code. Better ways to write this in ${language}: ${text}`
-        aiReq(text, language as string).then((res) => {return res.json()}).then(res => {
-            let response = extractCodeFromMarkdown(res.suggestion, language?.length as number)
+        aiReq(text as string, language as string).then((res) => {return res.json()}).then(res => {
+            response = extractCodeFromMarkdown(res.suggestion, language?.length as number)
             vscode.window.showInformationMessage(response);
             let pasteSuggestion = vscode.commands.registerCommand('codeimprover.pasteSuggestion', () => {
                 if (selection) {
-                    console.log("intra ")
+                    console.log("selection", selection)
+                    console.log("response", response)
                     // vscode.window.showTextDocument(editor?.document, editor?.viewColumn, true)
                     // editor.insertSnippet(new vscode.SnippetString("asdadasdasd1111111"), selection.start, { undoStopBefore: true, undoStopAfter: false })
                     editor.edit(builder => {
@@ -79,10 +80,11 @@ export function activate(context: vscode.ExtensionContext) {
                     });
             }});
             context.subscriptions.push(pasteSuggestion);
-        }).catch((err) => console.log(err))
        
+        })
 
 });
+
 
 
 context.subscriptions.push(disposable);

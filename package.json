@@ -56,7 +56,6 @@
   },
   "dependencies": {
     "dotenv": "^16.0.3",
-    "node-fetch": "^2.6.6",
     "openai": "^3.2.1"
   }
 }
