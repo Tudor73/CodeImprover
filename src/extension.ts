@@ -8,7 +8,7 @@ function extractCodeFromMarkdown(markdown: string, language: number ) {
 
     let start = markdown.search("```")
     let end = markdown.slice(start+1).search("```")
-    return markdown.slice(start+language + 3, end+1)
+    return markdown.slice(start+language + 3, end+2)
 }
 
 
@@ -25,7 +25,6 @@ async function aiReq(code: string, language: string) {
             "language": language
         })
     });
-
 }
 
 // This method is called when your extension is activated
@@ -58,37 +57,37 @@ export function activate(context: vscode.ExtensionContext) {
 		const editor = vscode.window.activeTextEditor;
 		const language = editor?.document.languageId
 		const selection = editor?.selection;
-
-        vscode.commands.executeCommand('vscode.executeHoverProvider', editor?.document.uri, editor?.selection.active)
-                        .then((res) => console.log(res))
-
-        let text = ""
-		if (selection) {
-			text = editor.document.getText(selection);
-			console.log(text);
-            // vscode.window.showTextDocument(editor?.document, editor?.viewColumn, true)
-            // editor.insertSnippet(new vscode.SnippetString("asdadasdasd1111111"), selection.start, { undoStopBefore: true, undoStopAfter: false })
-            editor.edit(builder => {
-                builder.replace(selection, "1");
-            })
-            .then(success => {
-                console.log("success:", success);
-                var postion = editor.selection.end; 
-                editor.selection = new vscode.Selection(postion, postion);
-            });
-            
-		}
+        let response = ""
         vscode.window.showInformationMessage('Hello World from CodeImprover!');
-
+        let text = editor?.document.getText(selection);
         let improvements = `Respond using markdown and write only code. Better ways to write this in ${language}: ${text}`
         aiReq(text, language as string).then((res) => {return res.json()}).then(res => {
             let response = extractCodeFromMarkdown(res.suggestion, language?.length as number)
             vscode.window.showInformationMessage(response);
+            let pasteSuggestion = vscode.commands.registerCommand('codeimprover.pasteSuggestion', () => {
+                if (selection) {
+                    console.log("intra ")
+                    // vscode.window.showTextDocument(editor?.document, editor?.viewColumn, true)
+                    // editor.insertSnippet(new vscode.SnippetString("asdadasdasd1111111"), selection.start, { undoStopBefore: true, undoStopAfter: false })
+                    editor.edit(builder => {
+                        builder.replace(selection, response);
+                    })
+                    .then(success => {
+                        console.log("success:", success);
+                        var postion = editor.selection.end; 
+                        editor.selection = new vscode.Selection(postion, postion);
+                    });
+            }});
+            context.subscriptions.push(pasteSuggestion);
         }).catch((err) => console.log(err))
-        
+       
 
-	context.subscriptions.push(disposable);
 });
+
+
+context.subscriptions.push(disposable);
+
+
 }
 
 // This method is called when your extension is deactivated
