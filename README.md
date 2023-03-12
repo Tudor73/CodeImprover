@@ -1,6 +1,6 @@
 # Code Improver 
 
-## AI tool that gives suggestion to improve code quality and readability
+## AI tool that gives suggestions to improve code quality and readability
 
 ### How to use
 * Highlight a piece of code in your editor and press 'Ctrl+0' to get a suggestion
