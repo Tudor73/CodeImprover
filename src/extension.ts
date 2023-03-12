@@ -64,6 +64,7 @@ export function activate(context: vscode.ExtensionContext) {
         aiReq(text as string, language as string).then((res) => {return res.json()}).then(res => {
             response = extractCodeFromMarkdown(res.suggestion, language?.length as number)
             vscode.window.showInformationMessage(response);
+            response = response.trim()
             let pasteSuggestion = vscode.commands.registerCommand('codeimprover.pasteSuggestion', () => {
                 if (selection) {
                     console.log("selection", selection)
@@ -75,8 +76,8 @@ export function activate(context: vscode.ExtensionContext) {
                     })
                     .then(success => {
                         console.log("success:", success);
-                        var postion = editor.selection.end; 
-                        editor.selection = new vscode.Selection(postion, postion);
+                        // var postion = editor.selection.end; 
+                        // editor.selection = new vscode.Selection(postion, postion);
                     });
             }});
             context.subscriptions.push(pasteSuggestion);
